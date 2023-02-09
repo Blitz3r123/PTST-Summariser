@@ -76,7 +76,10 @@ for i in track( range( len(tests) ), description="Summarising tests..." ):
     test_df["total_samples_received"] = total_samples_received
     test_df["total_samples_lost"] = total_samples_lost
     
-    summary_csv_path = os.path.join(test, "summary.csv")
+    if not os.path.exists("./summaries"):
+        os.mkdir("./summaries")
+
+    summary_csv_path = os.path.join("./summaries", f"{os.path.basename(test)}_summary.csv")
     
     if not os.path.exists(summary_csv_path):
         test_df.to_csv(summary_csv_path, sep=",")
