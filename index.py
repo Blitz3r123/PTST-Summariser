@@ -1,4 +1,5 @@
 import os
+import sys
 import pandas as pd
 
 from pprint import pprint
@@ -7,7 +8,10 @@ from rich.progress import track
 
 console = Console()
 
-testdir = ""
+if len(sys.argv) > 1:
+    testdir = sys.argv[1]
+else:
+    testdir = "./data"
 
 tests = [ os.path.join(testdir, _) for _ in os.listdir(testdir) ]
 
