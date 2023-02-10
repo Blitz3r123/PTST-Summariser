@@ -16,7 +16,12 @@ else:
 tests = [ os.path.join(testdir, _) for _ in os.listdir(testdir) ]
 
 def get_latencies(pubfile):
-    df = pd.read_csv(pubfile, on_bad_lines="skip", skiprows=2, skipfooter=5, engine="python")
+    try:
+        df = pd.read_csv(pubfile, on_bad_lines="skip", skiprows=2, skipfooter=5, engine="python")
+    except Exception as e:
+        console.print(f"Error looking at {pubfile}:", style="bold red")
+        console.print(e, style="bold red")
+        return
     
     try:
         lat_header = [_ for _ in df.columns if "latency" in _.lower()][0]
@@ -47,8 +52,14 @@ def get_total_sub_metric(sub_files, metric):
     
     return sub_df["total_" + metric][:-1]
 
+def test_summary_exists(test):
+    testname = os.path.basename(test)
+    return os.path.exists(f"./summaries/{testname}_summary.csv")
+
 for i in track( range( len(tests) ), description="Summarising tests..." ):
     test = tests[i]
+    if test_summary_exists(test):
+       continue 
     
     testpath = os.path.join(test, "run_1")
     
