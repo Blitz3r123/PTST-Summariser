@@ -8,7 +8,7 @@ Takes the test files and summarises all of the results into a single file consis
 - total_samples_received
 - total_samples_lost
 
-This file will be called `summary.csv` and is stored directly in the test directory.
+This file will be called `summary.csv` and is stored directly in the summaries directory.
 
 ## Usage
 Run:
