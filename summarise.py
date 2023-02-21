@@ -72,15 +72,24 @@ for i in track( range( len(tests) ), description="Summarising tests..." ):
     pub0_csv = pub_files[0]
     
     sub_files = [(os.path.join( testpath, _ )) for _ in os.listdir(testpath) if "sub" in _]
-    
-    test_df = pd.DataFrame(columns=[
+
+    df_cols = [
         "latency",
-        "total_throughput",
+        "total_throughput_mbps",
         "total_sample_rate",
         "total_samples_received",
         "total_samples_lost"
-    ])
+    ]
+
+    for sub_file in sub_files:
+        sub_name = os.path.basename(sub_file).replace(".csv", '')
+        df_cols.append(f"{sub_name}_throughput_mbps")
+        df_cols.append(f"{sub_name}_sample_rate")
+        df_cols.append(f"{sub_name}_samples_received")
+        df_cols.append(f"{sub_name}_samples_lost")
     
+    test_df = pd.DataFrame(columns=df_cols)
+
     latencies = get_latencies(pub0_csv)
     total_throughputs = get_total_sub_metric(sub_files, "mbps")
     total_sample_rates = get_total_sub_metric(sub_files, "samples/s")
