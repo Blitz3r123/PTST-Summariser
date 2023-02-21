@@ -58,8 +58,9 @@ def test_summary_exists(test):
 
 for i in track( range( len(tests) ), description="Summarising tests..." ):
     test = tests[i]
-    if test_summary_exists(test):
-       continue 
+    # TODO: Uncomment below.
+    # if test_summary_exists(test):
+    #    continue 
     
     testpath = os.path.join(test, "run_1")
     
@@ -84,9 +85,13 @@ for i in track( range( len(tests) ), description="Summarising tests..." ):
     test_df["latency"] = latencies
     test_df["total_throughput"] = total_throughputs
     test_df["total_sample_rate"] = total_sample_rates
-    test_df["total_samples_received"] = total_samples_received
-    test_df["total_samples_lost"] = total_samples_lost
+    # ? Only put the value on the first row instead of repeating on every column (taking up extra storage)
+    test_df.loc[test_df.index[0], 'total_samples_received'] = total_samples_received
+    test_df.loc[test_df.index[0], 'total_samples_lost'] = total_samples_lost
     
+    # ? Replace NaN with ""
+    test_df = test_df.fillna("")
+
     if not os.path.exists("./summaries"):
         os.mkdir("./summaries")
 
