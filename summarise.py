@@ -13,7 +13,7 @@ if len(sys.argv) > 1:
 else:
     testdir = "./data"
 
-tests = [ os.path.join(testdir, _) for _ in os.listdir(testdir) ]
+tests = [ os.path.join(testdir, _) for _ in os.listdir(testdir) if os.path.isdir( os.path.join(testdir, _) )]
 
 def get_latencies(pubfile):
     try:
@@ -63,8 +63,13 @@ for i in track( range( len(tests) ), description="Summarising tests..." ):
     #    continue 
     
     testpath = os.path.join(test, "run_1")
+    pub_files = [(os.path.join( testpath, _ )) for _ in os.listdir(testpath) if "pub" in _]
     
-    pub0_csv = [(os.path.join( testpath, _ )) for _ in os.listdir(testpath) if "pub" in _][0]
+    if len(pub_files) == 0:
+        console.print(f"{test} has 0 pub files.", style="bold red")
+        continue
+
+    pub0_csv = pub_files[0]
     
     sub_files = [(os.path.join( testpath, _ )) for _ in os.listdir(testpath) if "sub" in _]
     
