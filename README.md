@@ -13,5 +13,5 @@ This file will be called `summary.csv` and is stored directly in the test direct
 ## Usage
 Run:
 ```bash
-python app.py <test_dir>
+python summarise.py <test_dir>
 ```
