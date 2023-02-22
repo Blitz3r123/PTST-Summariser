@@ -32,6 +32,16 @@ def get_latencies(pubfile):
 
     return df
 
+def get_metric_per_sub(sub_file, metric):
+    df = pd.read_csv(sub_file, on_bad_lines='skip', skiprows=2, skipfooter=3, engine='python')
+    sub_head = [x for x in df.columns if metric in x.lower()][0]
+    df = df[sub_head]
+    df.rename(os.path.basename(sub_file).replace(".csv", ""), inplace=True)
+    # ? Take off the last number because its an average produced by perftest
+    df = df[:-2]
+    
+    return df
+
 def get_total_sub_metric(sub_files, metric):
     sub_dfs = []
     
@@ -91,12 +101,22 @@ for i in track( range( len(tests) ), description="Summarising tests..." ):
     test_df = pd.DataFrame(columns=df_cols)
 
     test_df["latency"] = get_latencies(pub0_csv)
-    test_df["total_throughput"] = get_total_sub_metric(sub_files, "mbps")
+    test_df["total_throughput_mbps"] = get_total_sub_metric(sub_files, "mbps")
     test_df["total_sample_rate"] = get_total_sub_metric(sub_files, "samples/s")
     # ? Only put the value on the first row instead of repeating on every column (taking up extra storage)
     test_df.loc[test_df.index[0], 'total_samples_received'] = get_total_sub_metric(sub_files, "total samples").max()
     test_df.loc[test_df.index[0], 'total_samples_lost'] = get_total_sub_metric(sub_files, "lost samples").max()
     
+    sub_cols = [_ for _ in test_df.columns if 'sub' in _]
+    sub_count = int(len(sub_cols) / 4)
+
+    for i in range(sub_count):
+        sub_file = [_ for _ in sub_files if f"sub_{i}.csv" in _][0]
+        test_df[f"sub_{i}_throughput_mbps"] = get_metric_per_sub(sub_file, "mbps")
+        test_df[f"sub_{i}_sample_rate"] = get_metric_per_sub(sub_file, "samples/s")
+        test_df.loc[test_df.index[0], f"sub_{i}_samples_received"] = get_metric_per_sub(sub_file, "total samples").max()
+        test_df.loc[test_df.index[0], f"sub_{i}_samples_lost"] = get_metric_per_sub(sub_file, "lost samples").max()
+
     # ? Replace NaN with ""
     test_df = test_df.fillna("")
 
