@@ -90,18 +90,12 @@ for i in track( range( len(tests) ), description="Summarising tests..." ):
     
     test_df = pd.DataFrame(columns=df_cols)
 
-    latencies = get_latencies(pub0_csv)
-    total_throughputs = get_total_sub_metric(sub_files, "mbps")
-    total_sample_rates = get_total_sub_metric(sub_files, "samples/s")
-    total_samples_received = get_total_sub_metric(sub_files, "total samples").max()
-    total_samples_lost = get_total_sub_metric(sub_files, "lost samples").max()
-    
-    test_df["latency"] = latencies
-    test_df["total_throughput"] = total_throughputs
-    test_df["total_sample_rate"] = total_sample_rates
+    test_df["latency"] = get_latencies(pub0_csv)
+    test_df["total_throughput"] = get_total_sub_metric(sub_files, "mbps")
+    test_df["total_sample_rate"] = get_total_sub_metric(sub_files, "samples/s")
     # ? Only put the value on the first row instead of repeating on every column (taking up extra storage)
-    test_df.loc[test_df.index[0], 'total_samples_received'] = total_samples_received
-    test_df.loc[test_df.index[0], 'total_samples_lost'] = total_samples_lost
+    test_df.loc[test_df.index[0], 'total_samples_received'] = get_total_sub_metric(sub_files, "total samples").max()
+    test_df.loc[test_df.index[0], 'total_samples_lost'] = get_total_sub_metric(sub_files, "lost samples").max()
     
     # ? Replace NaN with ""
     test_df = test_df.fillna("")
