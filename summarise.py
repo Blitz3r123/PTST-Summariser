@@ -68,9 +68,8 @@ def test_summary_exists(test):
 
 for i in track( range( len(tests) ), description="Summarising tests..." ):
     test = tests[i]
-    # TODO: Uncomment below.
-    # if test_summary_exists(test):
-    #    continue 
+    if test_summary_exists(test):
+       continue 
     
     testpath = os.path.join(test, "run_1")
     pub_files = [(os.path.join( testpath, _ )) for _ in os.listdir(testpath) if "pub" in _]
